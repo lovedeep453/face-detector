@@ -18,7 +18,7 @@ const db = require('knex')({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 
-app.use(cors());
+app.use(cors({origin: "*"}));
 app.use(bodyParser.json());
 
 
