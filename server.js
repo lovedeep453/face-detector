@@ -87,14 +87,13 @@ app.post('/register',(req,res)=>{
             .then(user =>{
                 res.json(user[0]);
             })
-            .catch(err => {
-            res.status(400).json('unable to register');
-            })
         })
         .then(trx.commit)
         .catch(trx.rollback)
     })
-    
+    .catch(err => {
+        res.status(400).json('unable to register');
+    })
 })
 app.get('/profile/:id',(req,res)=>{
     const {id}=req.params;
