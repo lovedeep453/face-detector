@@ -24,11 +24,26 @@ app.use(bodyParser.json());
 
 app.post('/api/face-detect', async (req, res) => {
   const { imageUrl } = req.body;
+  
+  // Validate environment variables
+  const requiredEnvVars = ['CLARIFAI_USER_ID', 'CLARIFAI_APP_ID', 'CLARIFAI_PAT'];
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      console.error(`Missing environment variable: ${envVar}`);
+      return res.status(500).json({ error: `Server configuration error: ${envVar} not set` });
+    }
+  }
+  
   try {
     const raw = JSON.stringify({
-      user_app_id: {user_id: process.env.CLARIFAI_USER_ID,app_id: process.env.CLARIFAI_APP_ID},
+      user_app_id: {
+        user_id: process.env.CLARIFAI_USER_ID,
+        app_id: process.env.CLARIFAI_APP_ID
+      },
       inputs: [{data: { image: {url: imageUrl}}}]
     });
+    
+    console.log('Making request to Clarifai API...');
     const response = await fetch("https://api.clarifai.com/v2/workflows/face-detection-workflow-j3lnei/results", {
       method: "POST",
       headers: {
@@ -39,13 +54,34 @@ app.post('/api/face-detect', async (req, res) => {
       body: raw
     });
 
+    console.log('Clarifai API response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Clarifai API error response:', errorText);
+      return res.status(500).json({ 
+        error: 'Face detection failed', 
+        details: `API returned ${response.status}`,
+        apiError: errorText
+      });
+    }
+
     const data = await response.json();
+    console.log('Successful response from Clarifai');
     res.json(data);
   } catch (err) {
-    console.error('Clarifai error:', err.message);
-    res.status(500).json({ error: 'Face detection failed.' });
+    console.error('Detailed error:', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name
+    });
+    res.status(500).json({ 
+      error: 'Face detection failed',
+      details: err.message
+    });
   }
 });
+
 
 app.post('/signin',(req,res)=>{
     const {email,passward}=req.body;
