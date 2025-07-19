@@ -22,7 +22,7 @@ app.use(cors({origin: "*"}));
 app.use(bodyParser.json());
 
 
-app.post('/api/face-detect', async (req, res) => {
+app.post('/api', async (req, res) => {
   const { imageUrl } = req.body;
   
   // Validate environment variables
