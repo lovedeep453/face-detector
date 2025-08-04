@@ -10,9 +10,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
     "bcrypt": "^6.0.0",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^2.2.0",
+    "clarifai-nodejs-grpc": "^11.6.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
